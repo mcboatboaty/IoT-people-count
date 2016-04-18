@@ -25,8 +25,11 @@ namespace WebApplication1.Controllers
         //This API is responsible for returning the counter size to the requesting client.
         public string Get(string id)
         {
+
             string output = "";
-            SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+            //SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+
+            SqlConnection sql = WebApiApplication.getSQL();
             //try and read the entries from the table
             try
             {
@@ -40,14 +43,19 @@ namespace WebApplication1.Controllers
                 {
                     myReader = myCmd.ExecuteReader();
                 }
-                catch
+                catch(Exception e)
                 {
                     return "Error reading from table, terminating.";
                 }
 
+                //myReader.Read();
                 myReader.Read();
                 output = myReader["ID"].ToString() + " : " + myReader["line"].ToString();
-                sql.Close();
+
+                //dispose all used resources
+                myReader.Close();
+                myCmd.Dispose();
+
                 return output;
             }
 
@@ -63,7 +71,8 @@ namespace WebApplication1.Controllers
         //this POST controller lets a RaspberryPi send a body containing a <string, int> pair representing ID of line and count of people, updates database accordingly.
         public string Post([FromBody]JObject value)
         {
-            SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+            //SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+            SqlConnection sql = WebApiApplication.getSQL();
 
             //container for value to update
             int line_update=0;
@@ -94,11 +103,8 @@ namespace WebApplication1.Controllers
                 //calculate the new count of people in line
                 line_update = line_update + entry.Value;
 
-                //must close sql connection to reset
-                sql.Close();
-
-                //open connection
-                sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+                //dispose the reader before moving up
+                myReader.Close();
 
                 //update entry
                 myCmd = new SqlCommand("UPDATE Counter SET line = @ln Where ID = @id", sql);
@@ -114,7 +120,7 @@ namespace WebApplication1.Controllers
                 }
 
                 //end of update
-                sql.Close();
+                myCmd.Dispose();
             }
 
             //returns the final updates value
@@ -125,7 +131,7 @@ namespace WebApplication1.Controllers
         //sql_handler(string cmd): simple sql execute method << receives an sql command >> executes command on open sql connection
         public void sql_handler(string cmd)
         {
-            SqlCommand myCommand = new SqlCommand(cmd, App_Start.Sql_db.get_DBInstance.getDBConn());
+            SqlCommand myCommand = new SqlCommand(cmd, WebApiApplication.getSQL());
             try
             {
                 myCommand.ExecuteNonQuery();
