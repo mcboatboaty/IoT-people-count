@@ -15,13 +15,13 @@ namespace WebApplication1.Controllers
     {
 
         //initiate a new connection to an existing sql data base 
-        SqlConnection sql = new SqlConnection("Server=tcp:mcboatboatydbserver.database.windows.net,1433;" +                //username of sql server
-                                                "Database=mcboatboatyDB;" +                                                //username of sql database  
-                                                "User ID=mcboatboaty@mcboatboatydbserver;" +                               //ID of database
-                                                "Password=WhyNotBoth2;" +                                                  //Password of database               /*Connection String of DB*/
-                                                "Trusted_Connection=False;" +                                              //Trusted connection flag
-                                                "Encrypt=True;" +                                                          //Encryption flad
-                                                "Connection Timeout=30;");                                                 //Max timeout of connection
+        //SqlConnection sql = new SqlConnection("Server=tcp:mcboatboatydbserver.database.windows.net,1433;" +                //username of sql server
+        //                                        "Database=mcboatboatyDB;" +                                                //username of sql database  
+        //                                        "User ID=mcboatboaty@mcboatboatydbserver;" +                               //ID of database
+        //                                        "Password=WhyNotBoth2;" +                                                  //Password of database               /*Connection String of DB*/
+        //                                        "Trusted_Connection=False;" +                                              //Trusted connection flag
+        //                                        "Encrypt=True;" +                                                          //Encryption flad
+        //                                        "Connection Timeout=30;");                                                 //Max timeout of connection
 
         // GET: api/Kim
         //This API call is currently not used in the protocol
@@ -33,35 +33,16 @@ namespace WebApplication1.Controllers
         // GET: api/Kim/5
         //This API call is client oriented: calls for the deployed Web App and manages a read only request.
         //This API is responsible for returning the counter size to the requesting client.
-        public string Get(int id)
+        public string Get(string id)
         {
-            //open the sql connection
-            sql.Open();
-
-            //define the sql command to create a 'Counter' table with ID and line as two column entries (in case the table doesn't exist, otherwise, do nothing.
-            String cmd_create = "If not exists(select name from sysobjects where name = 'Counter') CREATE TABLE Counter(ID varchar(50), line int)";
-
-            //execute the sql command
-            sql_handler(cmd_create);
-
-            /*String cmd_check = "INSERT INTO Counter(ID, line) Values ('Pi01', 5)";
-            SqlCommand myCommand = new SqlCommand(cmd_check
-                                     , sql);
-            try
-            {
-                myCommand.ExecuteNonQuery();
-            }
-            catch
-            {
-                return Marshal.GetLastWin32Error().ToString();
-            }*/
-
-            //try to read entries from the table
+            string output = "";
+            SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+            //try and read the entries from the table
             try
             {
                 SqlDataReader myReader = null;
-                SqlCommand myCmd = new SqlCommand("select * from Counter",
-                                                         sql);
+                SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
+                myCmd.Parameters.AddWithValue("@id", id);
                 try
                 {
                     myReader = myCmd.ExecuteReader();
@@ -71,11 +52,13 @@ namespace WebApplication1.Controllers
                     return "Error reading from table, terminating.";
                 }
                 myReader.Read();
-                return myReader["ID"].ToString()+" : "+myReader["line"].ToString();
+                output = myReader["ID"].ToString() + " : " + myReader["line"].ToString();
+                sql.Close();
+                return output;
             }
 
             //An error occured while retrieving data from sql table
-            catch (Exception e)
+            catch
             {
                 return "Error retrieving data from table, terminating.";
             }
@@ -86,6 +69,8 @@ namespace WebApplication1.Controllers
         //this POST controller lets a RaspberryPi send a body containing a <string, int> pair representing ID of line and count of people, updates database accordingly.
         public string Post([FromBody]JObject value)
         {
+            SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+
             //container for value to update
             int line_update=0;
 
@@ -97,18 +82,17 @@ namespace WebApplication1.Controllers
             //iterate over each entry in this dictionary
             foreach(KeyValuePair<string,int> entry in values)
             {
-                //open sql connection
-                sql.Open();
-
                 //retrieve the current people in line
-                SqlCommand myCmd = new SqlCommand("select * from Counter", sql);
+                SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
+                myCmd.Parameters.AddWithValue("@id", entry.Key);
+
                 try
                 {
                     myReader = myCmd.ExecuteReader();
                 }
                 catch
                 {
-
+                    return ("an error has occured while reading from table");
                 }
                 myReader.Read();
                 line_update = int.Parse(myReader["line"].ToString());
@@ -119,8 +103,7 @@ namespace WebApplication1.Controllers
                 //must close sql connection to reset
                 sql.Close();
 
-                //reopen sql connection to update new value
-                sql.Open();
+                sql = App_Start.Sql_db.get_DBInstance.getDBConn();
 
                 //update entry
                 myCmd = new SqlCommand("UPDATE Counter SET line = @ln Where ID = @id", sql);
@@ -147,7 +130,7 @@ namespace WebApplication1.Controllers
         //sql_handler(string cmd): simple sql execute method << receives an sql command >> executes command on open sql connection
         public void sql_handler(string cmd)
         {
-            SqlCommand myCommand = new SqlCommand(cmd, sql);
+            SqlCommand myCommand = new SqlCommand(cmd, App_Start.Sql_db.get_DBInstance.getDBConn());
             try
             {
                 myCommand.ExecuteNonQuery();
