@@ -41,6 +41,9 @@ namespace WebApplication1.Controllers
             try
             {
                 SqlDataReader myReader = null;
+
+                /*this is a commit test*/
+
                 SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
                 myCmd.Parameters.AddWithValue("@id", id);
                 try
