@@ -12,17 +12,7 @@ using Newtonsoft.Json;
 namespace WebApplication1.Controllers
 {
     public class KimController : ApiController
-    {
-
-        //initiate a new connection to an existing sql data base 
-        //SqlConnection sql = new SqlConnection("Server=tcp:mcboatboatydbserver.database.windows.net,1433;" +                //username of sql server
-        //                                        "Database=mcboatboatyDB;" +                                                //username of sql database  
-        //                                        "User ID=mcboatboaty@mcboatboatydbserver;" +                               //ID of database
-        //                                        "Password=WhyNotBoth2;" +                                                  //Password of database               /*Connection String of DB*/
-        //                                        "Trusted_Connection=False;" +                                              //Trusted connection flag
-        //                                        "Encrypt=True;" +                                                          //Encryption flad
-        //                                        "Connection Timeout=30;");                                                 //Max timeout of connection
-
+    { 
         // GET: api/Kim
         //This API call is currently not used in the protocol
         public IEnumerable<string> Get()
@@ -42,8 +32,10 @@ namespace WebApplication1.Controllers
             {
                 SqlDataReader myReader = null;
 
+                //get relevant row from table according to given ID
                 SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
                 myCmd.Parameters.AddWithValue("@id", id);
+
                 try
                 {
                     myReader = myCmd.ExecuteReader();
@@ -52,6 +44,7 @@ namespace WebApplication1.Controllers
                 {
                     return "Error reading from table, terminating.";
                 }
+
                 myReader.Read();
                 output = myReader["ID"].ToString() + " : " + myReader["line"].ToString();
                 sql.Close();
@@ -83,7 +76,7 @@ namespace WebApplication1.Controllers
             //iterate over each entry in this dictionary
             foreach(KeyValuePair<string,int> entry in values)
             {
-                //retrieve the current people in line
+                //retrieve the current people in line based on given device ID
                 SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
                 myCmd.Parameters.AddWithValue("@id", entry.Key);
 
@@ -104,6 +97,7 @@ namespace WebApplication1.Controllers
                 //must close sql connection to reset
                 sql.Close();
 
+                //open connection
                 sql = App_Start.Sql_db.get_DBInstance.getDBConn();
 
                 //update entry

@@ -20,6 +20,8 @@ namespace WebApplication1.Controllers
         public string Get(string id)
         {
             SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+
+            //count the number of rows containing the specific ID - we are expecting 0 or 1 assuming correctness
             SqlCommand sqlCmd = new SqlCommand("SELECT COUNT(*) from Counter where ID like @id", sql);
             sqlCmd.Parameters.AddWithValue("@id", id);
 
@@ -28,15 +30,19 @@ namespace WebApplication1.Controllers
             sql.Close();
             sqlCmd.Dispose();
 
+            //in short - if the ID wasn't found in the table, then we must initialize
             if (found == 0)
             {
                 sql = App_Start.Sql_db.get_DBInstance.getDBConn();
                 sqlCmd = new SqlCommand("INSERT INTO Counter (ID, line) Values (@id, @count)", sql);
                 sqlCmd.Parameters.AddWithValue("@id", id);
                 sqlCmd.Parameters.AddWithValue("@count", "0");
+
                 sqlCmd.ExecuteNonQuery();
                 sql.Close();
             }
+
+            //return the ID as confirmation
             return id;
         }
     }
