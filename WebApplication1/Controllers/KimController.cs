@@ -31,10 +31,9 @@ namespace WebApplication1.Controllers
 
             SqlConnection sql = WebApiApplication.getSQL();
             //try and read the entries from the table
+            SqlDataReader myReader = null;
             try
             {
-                SqlDataReader myReader = null;
-
                 //get relevant row from table according to given ID
                 SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
                 myCmd.Parameters.AddWithValue("@id", id);
@@ -43,8 +42,10 @@ namespace WebApplication1.Controllers
                 {
                     myReader = myCmd.ExecuteReader();
                 }
-                catch(Exception e)
+                catch
                 {
+                    myReader.Close();
+                    myCmd.Dispose();
                     return "Error reading from table, terminating.";
                 }
 
@@ -62,6 +63,10 @@ namespace WebApplication1.Controllers
             //An error occured while retrieving data from sql table
             catch
             {
+                if (myReader != null)
+                {
+                    myReader.Close();
+                }
                 return "Error retrieving data from table, terminating.";
             }
         }
@@ -95,6 +100,8 @@ namespace WebApplication1.Controllers
                 }
                 catch
                 {
+                    myReader.Close();
+                    myCmd.Dispose();
                     return ("an error has occured while reading from table");
                 }
                 myReader.Read();
