@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
         // GET: api/ID_Get/5
         public string Get(string id)
         {
-            SqlConnection sql = App_Start.Sql_db.get_DBInstance.getDBConn();
+            SqlConnection sql = WebApiApplication.getSQL();
 
             //count the number of rows containing the specific ID - we are expecting 0 or 1 assuming correctness
             SqlCommand sqlCmd = new SqlCommand("SELECT COUNT(*) from Counter where ID like @id", sql);
@@ -27,19 +27,19 @@ namespace WebApplication1.Controllers
 
             //execute the search command
             int found = (int)sqlCmd.ExecuteScalar();
-            sql.Close();
+
+            //release the cmd resource
             sqlCmd.Dispose();
 
             //in short - if the ID wasn't found in the table, then we must initialize
             if (found == 0)
             {
-                sql = App_Start.Sql_db.get_DBInstance.getDBConn();
                 sqlCmd = new SqlCommand("INSERT INTO Counter (ID, line) Values (@id, @count)", sql);
                 sqlCmd.Parameters.AddWithValue("@id", id);
                 sqlCmd.Parameters.AddWithValue("@count", "0");
 
                 sqlCmd.ExecuteNonQuery();
-                sql.Close();
+                sqlCmd.Dispose();
             }
 
             //return the ID as confirmation

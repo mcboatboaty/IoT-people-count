@@ -17,7 +17,9 @@ namespace WebApplication1.App_Start
                                    "Connection Timeout=30;");                                                 //Max timeout of connection
         private static Sql_db sql_DB;
 
-        public Sql_db() {}
+        private Sql_db()
+        {
+        }
 
         public static Sql_db get_DBInstance
         {
