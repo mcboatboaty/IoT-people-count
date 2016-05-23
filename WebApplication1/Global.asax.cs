@@ -6,7 +6,7 @@ using System.Web.Http;
 using System.Web.Routing;
 using System.Data.SqlClient;
 
-namespace WebApplication1
+namespace PeopleCount
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

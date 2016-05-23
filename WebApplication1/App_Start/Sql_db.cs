@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
 
-namespace WebApplication1.App_Start
+namespace PeopleCount.App_Start
 {
     public class Sql_db
     {

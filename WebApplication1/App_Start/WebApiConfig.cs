@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Data.SqlClient;
 
-namespace WebApplication1
+namespace PeopleCount
 {
     public static class WebApiConfig
     {

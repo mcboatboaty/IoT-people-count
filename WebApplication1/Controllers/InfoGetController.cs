@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace WebApplication1.Controllers
+namespace PeopleCount.Controllers
 {
     public class InfoGetController : ApiController
     { 
