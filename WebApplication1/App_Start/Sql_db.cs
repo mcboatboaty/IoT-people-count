@@ -15,7 +15,7 @@ namespace WebApplication1.App_Start
                                    "Trusted_Connection=False;" +                                              //Trusted connection flag
                                    "Encrypt=True;" +                                                          //Encryption flad
                                    "Connection Timeout=30;" +                                                 //Max timeout of connection
-                                   "MultipleActiveResultSets=True;");
+                                   "MultipleActiveResultSets=True;");                                         //Allow multiple concurrent users at once
         private static Sql_db sql_DB;
 
         private Sql_db()

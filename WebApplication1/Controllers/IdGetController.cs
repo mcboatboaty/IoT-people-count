@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 
 namespace WebApplication1.Controllers
 {
-    public class ID_GetController : ApiController
+    public class IdGetController : ApiController
     {
         // GET: api/ID_Get
         public IEnumerable<string> Get()

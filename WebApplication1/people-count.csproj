@@ -135,10 +135,9 @@
     <Compile Include="App_Start\Sql_db.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\ID_GetController.cs" />
-    <Compile Include="Controllers\KimController.cs" />
-    <Compile Include="Controllers\SivanController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\GetAllController.cs" />
+    <Compile Include="Controllers\IdGetController.cs" />
+    <Compile Include="Controllers\InfoGetController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
