@@ -16,6 +16,7 @@ namespace PeopleCount.App_Start
                                    "Encrypt=True;" +                                                          //Encryption flad
                                    "Connection Timeout=30;" +                                                 //Max timeout of connection
                                    "MultipleActiveResultSets=True;");                                         //Allow multiple concurrent users at once
+
         private static Sql_db sql_DB;
 
         private Sql_db()
