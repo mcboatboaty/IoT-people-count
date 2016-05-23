@@ -42,11 +42,14 @@ namespace WebApplication1.Controllers
                 {
                     myReader = myCmd.ExecuteReader();
                 }
-                catch
+                catch(Exception e)
                 {
-                    myReader.Close();
+                    if (myReader != null)
+                    {
+                        myReader.Close();
+                    }
                     myCmd.Dispose();
-                    return "Error reading from table, terminating.";
+                    return e.Message;
                 }
 
                 //myReader.Read();
@@ -61,13 +64,13 @@ namespace WebApplication1.Controllers
             }
 
             //An error occured while retrieving data from sql table
-            catch
+            catch(Exception e)
             {
-                if (myReader != null)
+                if (myReader!=null)
                 {
                     myReader.Close();
                 }
-                return "Error retrieving data from table, terminating.";
+                return e.ToString()+ "\n"+e.Message;
             }
         }
 
@@ -86,7 +89,7 @@ namespace WebApplication1.Controllers
 
             //Deserialize POST request packet from json to dictionary
             var values = JsonConvert.DeserializeObject<Dictionary<string, int>>(value.ToString());
-
+ 
             //iterate over each entry in this dictionary
             foreach(KeyValuePair<string,int> entry in values)
             {
@@ -100,7 +103,10 @@ namespace WebApplication1.Controllers
                 }
                 catch
                 {
-                    myReader.Close();
+                    if (myReader != null)
+                    {
+                        myReader.Close();
+                    }
                     myCmd.Dispose();
                     return ("an error has occured while reading from table");
                 }

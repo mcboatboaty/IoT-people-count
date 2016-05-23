@@ -14,7 +14,8 @@ namespace WebApplication1.App_Start
                                    "Password=WhyNotBoth2;" +                                                  //Password of database               /*Connection String of DB*/
                                    "Trusted_Connection=False;" +                                              //Trusted connection flag
                                    "Encrypt=True;" +                                                          //Encryption flad
-                                   "Connection Timeout=30;");                                                 //Max timeout of connection
+                                   "Connection Timeout=30;" +                                                 //Max timeout of connection
+                                   "MultipleActiveResultSets=True;");
         private static Sql_db sql_DB;
 
         private Sql_db()

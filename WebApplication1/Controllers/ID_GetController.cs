@@ -20,13 +20,21 @@ namespace WebApplication1.Controllers
         public string Get(string id)
         {
             SqlConnection sql = WebApiApplication.getSQL();
+            int found = 0;
 
             //count the number of rows containing the specific ID - we are expecting 0 or 1 assuming correctness
             SqlCommand sqlCmd = new SqlCommand("SELECT COUNT(*) from Counter where ID like @id", sql);
             sqlCmd.Parameters.AddWithValue("@id", id);
 
-            //execute the search command
-            int found = (int)sqlCmd.ExecuteScalar();
+            try
+            {
+                //execute the search command
+                found = (int)sqlCmd.ExecuteScalar();
+            }
+            catch
+            {
+                return null;
+            }
 
             //release the cmd resource
             sqlCmd.Dispose();
