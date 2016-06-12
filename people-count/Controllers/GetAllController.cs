@@ -12,10 +12,11 @@ namespace PeopleCount.Controllers
     {
         // GET: api/GetAll
         //This API call retrieves all active Raspberry Pi devices ID and returns a list object containing all the ID's
-        public IEnumerable<string> Get()
+        public Dictionary<string,string> Get()
         {
             //dynamic list to hold all retrieved ID's from the database
             List<string> allIDs = new List<string>();
+            Dictionary<string, string> AllIds = new Dictionary<string, string>();
 
             //get an SQL connection instance
             SqlConnection sql = WebApiApplication.getSQL();
@@ -25,7 +26,7 @@ namespace PeopleCount.Controllers
             try
             {
                 //get everything in the Counter tables
-                SqlCommand myCmd = new SqlCommand("select * from Counter", sql);
+                SqlCommand myCmd = new SqlCommand("select * from CounterU", sql);
 
                 try
                 {
@@ -38,21 +39,22 @@ namespace PeopleCount.Controllers
                         myReader.Close();
                     }
                     myCmd.Dispose();
-                    return new string[] { e.Message };
+                    return new Dictionary<string,string>() { { e.Message, e.Message } };
                 }
 
                 //read every entry from the reader
                 while (myReader.Read())
                 {
                     //append the found id in the output list
-                    allIDs.Add(myReader["ID"].ToString());
+                    //allIDs.Add(myReader["ID"].ToString());
+                    AllIds.Add(myReader["ID"].ToString(), myReader["Label"].ToString());
                 }
 
                 //dispose all used resources
                 myReader.Close();
                 myCmd.Dispose();
 
-                return allIDs;
+                return AllIds;
             }
 
             //An error occured while retrieving data from sql table
@@ -64,7 +66,7 @@ namespace PeopleCount.Controllers
                 }
 
                 //return the error message
-                return new string[] { e.Message };
+                return new Dictionary<string, string>() { { e.Message, e.Message } };
             }
         }
     }

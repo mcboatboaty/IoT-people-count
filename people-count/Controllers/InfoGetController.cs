@@ -36,7 +36,7 @@ namespace PeopleCount.Controllers
             try
             {
                 //get relevant row from table according to given ID
-                SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
+                SqlCommand myCmd = new SqlCommand("select * from CounterU where ID = @id", sql);
                 myCmd.Parameters.AddWithValue("@id", id);
 
                 try
@@ -57,7 +57,7 @@ namespace PeopleCount.Controllers
                 myReader.Read();
 
                 //format the output string to contain Pi ID and counter value
-                output = myReader["ID"].ToString() + " : " + myReader["line"].ToString();
+                output = myReader["Label"].ToString() + " : " + myReader["line"].ToString();
 
                 //dispose all used resources
                 myReader.Close();
@@ -104,7 +104,7 @@ namespace PeopleCount.Controllers
             /*Manipulate DB according to receive parameters*/
 
             //retrieve the current people in line based on given device ID
-            SqlCommand myCmd = new SqlCommand("select * from Counter where ID = @id", sql);
+            SqlCommand myCmd = new SqlCommand("select * from CounterU where ID = @id", sql);
             myCmd.Parameters.AddWithValue("@id", id);
 
             try
@@ -134,7 +134,7 @@ namespace PeopleCount.Controllers
             myReader.Close();
 
             //update entry
-            myCmd = new SqlCommand("UPDATE Counter SET line = @ln Where ID = @id", sql);
+            myCmd = new SqlCommand("UPDATE CounterU SET line = @ln Where ID = @id", sql);
             myCmd.Parameters.AddWithValue("@ln", line_update.ToString());
             myCmd.Parameters.AddWithValue("@id", id);
             try

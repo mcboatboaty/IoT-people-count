@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Data.SqlClient;
+using Newtonsoft.Json.Linq;
 
 namespace PeopleCount.Controllers
 {
@@ -17,13 +18,15 @@ namespace PeopleCount.Controllers
         }
 
         // GET: api/ID_Get/5
-        public string Get(string id)
+        public string Post([FromBody]JObject value)
         {
             SqlConnection sql = WebApiApplication.getSQL();
             int found = 0;
+            String id = value.Property("ID").Value.ToString();
+            String label = value.Property("Label").Value.ToString();
 
             //count the number of rows containing the specific ID - we are expecting 0 or 1 assuming correctness
-            SqlCommand sqlCmd = new SqlCommand("SELECT COUNT(*) from Counter where ID like @id", sql);
+            SqlCommand sqlCmd = new SqlCommand("SELECT COUNT(*) from CounterU where ID like @id", sql);
             sqlCmd.Parameters.AddWithValue("@id", id);
 
             try
@@ -42,9 +45,10 @@ namespace PeopleCount.Controllers
             //in short - if the ID wasn't found in the table, then we must initialize
             if (found == 0)
             {
-                sqlCmd = new SqlCommand("INSERT INTO Counter (ID, line) Values (@id, @count)", sql);
+                sqlCmd = new SqlCommand("INSERT INTO CounterU (ID, line, Label) Values (@id, @count, @label)", sql);
                 sqlCmd.Parameters.AddWithValue("@id", id);
                 sqlCmd.Parameters.AddWithValue("@count", "0");
+                sqlCmd.Parameters.AddWithValue("@label", label);
 
                 sqlCmd.ExecuteNonQuery();
                 sqlCmd.Dispose();
